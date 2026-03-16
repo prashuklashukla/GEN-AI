@@ -1,4 +1,5 @@
 const userModels = require('../models/user.model')
+const TokenblacklistModels = require("../models/blacklist.model")
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -67,7 +68,7 @@ const loginUserController = async (req, res) => {
     const user = await userModels.findOne({ email })
 
     if (!user) {
-        res.status(404).json({
+        return res.status(404).json({
             message: "invlaid email and password"
         })
     }
@@ -75,7 +76,7 @@ const loginUserController = async (req, res) => {
     const ispasswordvalaid = await bcrypt.compare(password, user.password)
 
     if (!ispasswordvalaid) {
-        res.status(404).json({
+        return res.status(404).json({
             message: "invlaid password and email"
         })
     }
@@ -99,7 +100,31 @@ const loginUserController = async (req, res) => {
 
 }
 
+
+/**
+ * @name logoutUserController
+ * @description logout a user, expects email and password in the request body
+ * @access Public
+ */
+
+const logoutUserController = async (req, res) => {
+    const token = req.cookies.token
+
+    if (token) {
+        await TokenblacklistModels.create({ token })
+    }
+
+    res.clearCookie("token")
+
+    res.status(200).json({
+        message: "user logout successfully"
+    })
+}
+
+
+
 module.exports = {
     registerUser,
-    loginUserController
+    loginUserController,
+    logoutUserController
 }

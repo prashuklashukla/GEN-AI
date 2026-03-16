@@ -20,4 +20,13 @@ authRoutes.post("/register", authController.registerUser)
 
 authRoutes.post("/login", authController.loginUserController)
 
+/**
+ *@routes Post api/auth/logout
+* @description logout the  user  
+* @access Public
+ */
+
+authRoutes.get("/logout", authController.logoutUserController)
+
+
 module.exports = authRoutes
